@@ -1,0 +1,5 @@
+bin
+vendor
+main_service.go
+PLTD3
+coverage.txt

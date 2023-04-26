@@ -1,0 +1,45 @@
+{
+     "GoVersion": "1.19",
+     "Version": "v1.14.3",
+     "LibraryName": "github.com/golangid/candi",
+     "ServiceName": "PLTD3",
+     "PackagePrefix": "PLTD3",
+     "ProtoSource": "PLTD3/api/proto",
+     "Owner": "",
+     "License": "",
+     "Year": 2023,
+     "IsMonorepo": false,
+     "RestHandler": true,
+     "GRPCHandler": false,
+     "GraphQLHandler": false,
+     "KafkaHandler": false,
+     "SchedulerHandler": false,
+     "RedisSubsHandler": false,
+     "TaskQueueHandler": false,
+     "PostgresListenerHandler": false,
+     "RabbitMQHandler": false,
+     "IsWorkerActive": true,
+     "RedisDeps": true,
+     "SQLDeps": true,
+     "MongoDeps": false,
+     "SQLUseGORM": true,
+     "ArangoDeps": false,
+     "SQLDriver": "postgres",
+     "Modules": [
+          {
+               "ModuleName": "business"
+          },
+          {
+               "ModuleName": "consumption"
+          },
+          {
+               "ModuleName": "distribution"
+          },
+          {
+               "ModuleName": "kpi"
+          },
+          {
+               "ModuleName": "monitoring"
+          }
+     ]
+}
