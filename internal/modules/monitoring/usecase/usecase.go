@@ -17,9 +17,15 @@ import (
 
 // MonitoringUsecase abstraction
 type MonitoringUsecase interface {
-	GetMonitoringReport(ctx context.Context, filter *domain.FilterMonitoring) (data []domain.ResponseMonitoring, meta candishared.Meta, err error)
+	GetSumMonitoring(ctx context.Context, filter *domain.FilterMonitoring) (data domain.ResponseSumMonitoring, err error)
+
 	GetAllMonitoring(ctx context.Context, filter *domain.FilterMonitoring) (data []domain.ResponseMonitoring, meta candishared.Meta, err error)
 	GetDetailMonitoring(ctx context.Context, id string) (data domain.ResponseMonitoring, err error)
+	
+	
+	
+	
+	
 	CreateMonitoring(ctx context.Context, data *domain.RequestMonitoring) (err error)
 	UpdateMonitoring(ctx context.Context, data *domain.RequestMonitoring) (err error)
 	DeleteMonitoring(ctx context.Context, id string) (err error)

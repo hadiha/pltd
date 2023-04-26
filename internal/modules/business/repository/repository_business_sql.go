@@ -4,6 +4,7 @@ package repository
 
 import (
 	"context"
+	"fmt"
 
 	"time"
 
@@ -33,6 +34,43 @@ func NewBusinessRepoSQL(readDB, writeDB *gorm.DB) BusinessRepository {
 	}
 }
 
+
+func (r *businessRepoSQL) FetchConditionUnit(ctx context.Context, filter *domain.FilterBusiness) (result []shareddomain.Business, err error) {
+	trace, ctx := tracer.StartTraceWithContext(ctx, "BusinessRepoSQL:FetchConditionUnit")
+	defer func() { trace.Finish(tracer.FinishWithError(err)) }()
+
+	if filter.OrderBy == "" {
+		filter.OrderBy = "updated_at"
+	}
+	
+	fmt.Println("resul",result)
+
+
+// 	SELECT status, count(status) as jumlah
+// FROM "pltd_pembangkit" group by status UNION ALL
+// SELECT 'TOTAL' status, COUNT(status) FROM "pltd_pembangkit" 
+
+	err = r.setFilterBusiness(shared.SetSpanToGorm(ctx, r.readDB), filter).Select(
+		"status", "count(status) as jumlah").Group("status").Find(&result).Error
+
+	return
+}
+
+func (r *businessRepoSQL) FetchAllReport(ctx context.Context, filter *domain.FilterBusiness) (data []shareddomain.BusinessReport, err error) {
+	trace, ctx := tracer.StartTraceWithContext(ctx, "BusinessRepoSQL:FetchAllReport")
+	defer func() { trace.Finish(tracer.FinishWithError(err)) }()
+
+	if filter.OrderBy == "" {
+		filter.OrderBy = "updated_at"
+	}
+	
+	err = r.setFilterBusiness(shared.SetSpanToGorm(ctx, r.readDB), filter).Order(clause.OrderByColumn{
+		Column: clause.Column{Name: filter.OrderBy},
+		Desc:   strings.ToUpper(filter.Sort) == "DESC",
+	}).Limit(filter.Limit).Offset(filter.CalculateOffset()).Find(&data).Error
+	return
+}
+
 func (r *businessRepoSQL) FetchAll(ctx context.Context, filter *domain.FilterBusiness) (data []shareddomain.Business, err error) {
 	trace, ctx := tracer.StartTraceWithContext(ctx, "BusinessRepoSQL:FetchAll")
 	defer func() { trace.Finish(tracer.FinishWithError(err)) }()
@@ -60,32 +98,7 @@ func (r *businessRepoSQL) Count(ctx context.Context, filter *domain.FilterBusine
 	return
 }
 
-func (r *businessRepoSQL) SumAllBusiness(ctx context.Context, filter *domain.FilterBusiness) (result shareddomain.Business, err error) {
-	trace, ctx := tracer.StartTraceWithContext(ctx, "BusinessRepoSQL:SumAllBusiness")
-	defer func() { trace.Finish(tracer.FinishWithError(err)) }()
 
-	if filter.OrderBy == "" {
-		filter.OrderBy = "updated_at"
-	}
-	
-
-	// today := time.Now()
-	// yesterday := today.AddDate(0, 0, -1)
-	yesterday := "2023-04-10"
-	err = r.setFilterBusiness(shared.SetSpanToGorm(ctx, r.readDB), filter).Select(
-		"date", 
-		"SUM(dmn) as dmn", 
-		"SUM(cad) as cad", 
-		"SUM(dmp) as dmp", 
-		"SUM(bp) as bp",
-		"SUM(cad_mw) as cad_mw",
-		"SUM(po) as po",
-		"SUM(mo) as mo",
-		"SUM(fd) as fd",
-		"SUM(total) as total").Where("date = ?", yesterday).Group("date").Find(&result).Error
-		// "SUM(total) as total").Where("date = ?", yesterday.Format("2006-01-02")).Group("date").Find(&result).Error
-	return
-}
 
 
 

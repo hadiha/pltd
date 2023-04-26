@@ -2,7 +2,6 @@ package usecase
 
 import (
 	"context"
-	"time"
 
 	"PLTD3/internal/modules/business/domain"
 	shareddomain "PLTD3/pkg/shared/domain"
@@ -25,23 +24,32 @@ func (uc *businessUsecaseImpl) GetAllBusiness(ctx context.Context, filter *domai
 
 	for _, detail := range data {
 		results = append(results, domain.ResponseBusiness{
-			ID: detail.ID,
-			Unit: detail.Unit,
-			Day: detail.Day,
-			Date: detail.CreatedAt.Format(time.RFC3339),
-			Dmn: detail.Dmn,
-			Cad: detail.Cad,
-			Dmp: detail.Dmp,
-			Bp: detail.Bp,
-			Cad_mw: detail.Cad_mw,
-			Status: detail.Status,
-			Description: detail.Description,
-			Po: detail.Po,
-			Mo: detail.Mo,
-			Fd: detail.Fd,
-			Total: detail.Total,
-			CreatedAt: detail.CreatedAt.Format(time.RFC3339),
-			UpdatedAt: detail.UpdatedAt.Format(time.RFC3339),
+			ID : detail.ID,
+			Tgl_input : detail.Tgl_input,
+			Tgl_laporan : detail.Tgl_laporan,
+			Jenis_pembangkit : detail.Jenis_pembangkit,
+			Shift : detail.Shift,
+			Sh_ipp_ap : detail.Sh_ipp_ap,
+			Sistem : detail.Sistem,
+			Isolated : detail.Isolated,
+			Sentral : detail.Sentral,
+			Unit_mesin : detail.Unit_mesin,
+			Tegangan : detail.Tegangan,
+			Daya_pasang : detail.Daya_pasang,
+			Daya_mampu : detail.Daya_mampu,
+			Dmp : detail.Dmp,
+			Beban : detail.Beban,
+			Status : detail.Status,
+			Deskripsi : detail.Deskripsi,
+			Tgl_mulai : detail.Tgl_mulai,
+			Tgl_selesai : detail.Tgl_selesai,
+			Progress : detail.Progress,
+			Outage : detail.Outage,
+			Derating : detail.Derating,
+			Hop_bb : detail.Hop_bb,
+			Vol_bb : detail.Vol_bb,
+			Vol_bbm : detail.Vol_bbm,
+			UpdatedAt : detail.UpdatedAt.String(),
 		})
 	}
 

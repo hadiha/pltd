@@ -41,13 +41,59 @@ func (h *RestHandler) Mount(root *echo.Group) {
 
 	business := v1Root.Group("/business", echo.WrapMiddleware(h.mw.HTTPBearerAuth))
 	business.GET("", h.getAllBusiness, echo.WrapMiddleware(h.mw.HTTPPermissionACL("getAllBusiness")))
-	business.GET("/sum", h.getSumBusiness, echo.WrapMiddleware(h.mw.HTTPPermissionACL("getSumAll")))
+	business.GET("/condition", h.getConditionUnit, echo.WrapMiddleware(h.mw.HTTPPermissionACL("getConditionUnit")))
+
+	// Laporan
+	business.GET("/report", h.getBusinessReport, echo.WrapMiddleware(h.mw.HTTPPermissionACL("getBusinessReport")))
 
 	// hapus jika tidak perlu
 	// business.GET("/:id", h.getDetailBusinessByID, echo.WrapMiddleware(h.mw.HTTPPermissionACL("getDetailBusiness")))
 	// business.POST("", h.createBusiness, echo.WrapMiddleware(h.mw.HTTPPermissionACL("createBusiness")))
 	// business.PUT("/:id", h.updateBusiness, echo.WrapMiddleware(h.mw.HTTPPermissionACL("updateBusiness")))
 	// business.DELETE("/:id", h.deleteBusiness, echo.WrapMiddleware(h.mw.HTTPPermissionACL("deleteBusiness")))
+}
+
+func (h *RestHandler) getConditionUnit(c echo.Context) error {
+	trace, ctx := tracer.StartTraceWithContext(c.Request().Context(), "BusinessDeliveryREST:GetConditionUnit")
+	defer trace.Finish()
+
+	var filter domain.FilterBusiness
+	if err := candihelper.ParseFromQueryParam(c.Request().URL.Query(), &filter); err != nil {
+		return wrapper.NewHTTPResponse(http.StatusBadRequest, "Failed parse filter", err).JSON(c.Response())
+	}
+
+	// if err := h.validator.ValidateDocument("business/get_all", filter); err != nil {
+	// 	return wrapper.NewHTTPResponse(http.StatusBadRequest, "Failed validate filter", err).JSON(c.Response())
+	// }
+
+	data, err := h.uc.Business().GetConditionUnit(ctx, &filter)
+	if err != nil {
+		return wrapper.NewHTTPResponse(http.StatusBadRequest, err.Error()).JSON(c.Response())
+	}
+
+	return wrapper.NewHTTPResponse(http.StatusOK, "Success", data).JSON(c.Response())
+}
+
+
+func (h *RestHandler) getBusinessReport(c echo.Context) error {
+	trace, ctx := tracer.StartTraceWithContext(c.Request().Context(), "BusinessDeliveryREST:GetBusinessReport")
+	defer trace.Finish()
+
+	var filter domain.FilterBusiness
+	if err := candihelper.ParseFromQueryParam(c.Request().URL.Query(), &filter); err != nil {
+		return wrapper.NewHTTPResponse(http.StatusBadRequest, "Failed parse filter", err).JSON(c.Response())
+	}
+
+	// if err := h.validator.ValidateDocument("business/get_all", filter); err != nil {
+	// 	return wrapper.NewHTTPResponse(http.StatusBadRequest, "Failed validate filter", err).JSON(c.Response())
+	// }
+
+	data, meta, err := h.uc.Business().GetBusinessReport(ctx, &filter)
+	if err != nil {
+		return wrapper.NewHTTPResponse(http.StatusBadRequest, err.Error()).JSON(c.Response())
+	}
+
+	return wrapper.NewHTTPResponse(http.StatusOK, "Success", meta, data).JSON(c.Response())
 }
 
 func (h *RestHandler) getAllBusiness(c echo.Context) error {
@@ -75,22 +121,7 @@ func (h *RestHandler) getAllBusiness(c echo.Context) error {
 	return wrapper.NewHTTPResponse(http.StatusOK, message, meta, data).JSON(c.Response())
 }
 
-func (h *RestHandler) getSumBusiness(c echo.Context) error {
-	trace, ctx := tracer.StartTraceWithContext(c.Request().Context(), "BusinessDeliveryREST:GetSumBusiness")
-	defer trace.Finish()
 
-	var filter domain.FilterBusiness
-	if err := candihelper.ParseFromQueryParam(c.Request().URL.Query(), &filter); err != nil {
-		return wrapper.NewHTTPResponse(http.StatusBadRequest, "Failed parse filter", err).JSON(c.Response())
-	}
-
-	data, err := h.uc.Business().GetSumBusiness(ctx, &filter)
-	if err != nil {
-		return wrapper.NewHTTPResponse(http.StatusBadRequest, err.Error()).JSON(c.Response())
-	}
-
-	return wrapper.NewHTTPResponse(http.StatusOK, "Success", data).JSON(c.Response())
-}
 
 
 

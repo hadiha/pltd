@@ -41,7 +41,9 @@ func (h *RestHandler) Mount(root *echo.Group) {
 
 	monitoring := v1Root.Group("/monitoring", echo.WrapMiddleware(h.mw.HTTPBearerAuth))
 	monitoring.GET("", h.getAllMonitoring, echo.WrapMiddleware(h.mw.HTTPPermissionACL("getAllMonitoring")))
-	monitoring.GET("/report", h.getMonitoringReport, echo.WrapMiddleware(h.mw.HTTPPermissionACL("getMonitoringReport")))
+
+	// summary
+	monitoring.GET("/sum", h.getSumMonitoring, echo.WrapMiddleware(h.mw.HTTPPermissionACL("getSumMonitoring")))
 
 	// komen dlu aja
 	// monitoring.GET("/:id", h.getDetailMonitoringByID, echo.WrapMiddleware(h.mw.HTTPPermissionACL("getDetailMonitoring")))
@@ -50,8 +52,9 @@ func (h *RestHandler) Mount(root *echo.Group) {
 	// monitoring.DELETE("/:id", h.deleteMonitoring, echo.WrapMiddleware(h.mw.HTTPPermissionACL("deleteMonitoring")))
 }
 
-func (h *RestHandler) getMonitoringReport(c echo.Context) error {
-	trace, ctx := tracer.StartTraceWithContext(c.Request().Context(), "MonitoringDeliveryREST:GetMonitoringReport")
+
+func (h *RestHandler) getSumMonitoring(c echo.Context) error {
+	trace, ctx := tracer.StartTraceWithContext(c.Request().Context(), "MonitoringDeliveryREST:GetSumMonitoring")
 	defer trace.Finish()
 
 	var filter domain.FilterMonitoring
@@ -59,17 +62,14 @@ func (h *RestHandler) getMonitoringReport(c echo.Context) error {
 		return wrapper.NewHTTPResponse(http.StatusBadRequest, "Failed parse filter", err).JSON(c.Response())
 	}
 
-	// if err := h.validator.ValidateDocument("monitoring/get_all", filter); err != nil {
-	// 	return wrapper.NewHTTPResponse(http.StatusBadRequest, "Failed validate filter", err).JSON(c.Response())
-	// }
-
-	data, meta, err := h.uc.Monitoring().GetMonitoringReport(ctx, &filter)
+	data, err := h.uc.Monitoring().GetSumMonitoring(ctx, &filter)
 	if err != nil {
 		return wrapper.NewHTTPResponse(http.StatusBadRequest, err.Error()).JSON(c.Response())
 	}
 
-	return wrapper.NewHTTPResponse(http.StatusOK, "Success", meta, data).JSON(c.Response())
+	return wrapper.NewHTTPResponse(http.StatusOK, "Success", data).JSON(c.Response())
 }
+
 
 func (h *RestHandler) getAllMonitoring(c echo.Context) error {
 	trace, ctx := tracer.StartTraceWithContext(c.Request().Context(), "MonitoringDeliveryREST:GetAllMonitoring")

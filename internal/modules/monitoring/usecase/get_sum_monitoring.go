@@ -1,25 +1,23 @@
 package usecase
 
 import (
-	"PLTD3/internal/modules/business/domain"
+	"PLTD3/internal/modules/monitoring/domain"
 	"context"
-	"fmt"
 
 	shareddomain "PLTD3/pkg/shared/domain"
 
 	"github.com/golangid/candi/tracer"
 )
 
-func (uc *businessUsecaseImpl) GetSumBusiness(ctx context.Context, filter *domain.FilterBusiness) (result domain.ResponseSumBusiness, err error) {
-	trace, ctx := tracer.StartTraceWithContext(ctx, "BusinessUsecase:GetSumBusiness")
+func (uc *monitoringUsecaseImpl) GetSumMonitoring(ctx context.Context, filter *domain.FilterMonitoring) (result domain.ResponseSumMonitoring, err error) {
+	trace, ctx := tracer.StartTraceWithContext(ctx, "MonitoringUsecase:GetSumMonitoring")
 	defer trace.Finish()
 
-	var data shareddomain.Business
-	data, err = uc.repoSQL.BusinessRepo().SumAllBusiness(ctx, filter)
+	var data shareddomain.Monitoring
+	data, err = uc.repoSQL.MonitoringRepo().SumAllMonitoring(ctx, filter)
 	if err != nil {
 		return result, err
 	}
-	fmt.Println("hai",data)
 
 	result.Date = data.Date
 	result.Dmn = data.Dmn

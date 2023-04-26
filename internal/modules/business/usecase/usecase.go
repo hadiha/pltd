@@ -18,7 +18,10 @@ import (
 // BusinessUsecase abstraction
 type BusinessUsecase interface {
 	GetAllBusiness(ctx context.Context, filter *domain.FilterBusiness) (data []domain.ResponseBusiness, meta candishared.Meta, err error)
-	GetSumBusiness(ctx context.Context, filter *domain.FilterBusiness) (data domain.ResponseSumBusiness, err error)
+	GetConditionUnit(ctx context.Context, filter *domain.FilterBusiness) (data []domain.ResponseBusinessCondition, err error)
+
+	// Report
+	GetBusinessReport(ctx context.Context, filter *domain.FilterBusiness) (data []domain.ResponseBusinessReport, meta candishared.Meta, err error)
 
 	// hapus bila tidak perlu
 	GetDetailBusiness(ctx context.Context, id string) (data domain.ResponseBusiness, err error)

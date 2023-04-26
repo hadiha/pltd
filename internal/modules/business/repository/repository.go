@@ -11,8 +11,11 @@ import (
 
 // BusinessRepository abstract interface
 type BusinessRepository interface {
-	SumAllBusiness(ctx context.Context, filter *domain.FilterBusiness) (shareddomain.Business, error)
 	FetchAll(ctx context.Context, filter *domain.FilterBusiness) ([]shareddomain.Business, error)
+	FetchConditionUnit(ctx context.Context, filter *domain.FilterBusiness) ([]shareddomain.Business, error)
+
+	// Report
+	FetchAllReport(ctx context.Context, filter *domain.FilterBusiness) ([]shareddomain.BusinessReport, error)
 
 
 	// hapus jika tidak perlu

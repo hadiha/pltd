@@ -33,21 +33,6 @@ func NewMonitoringRepoSQL(readDB, writeDB *gorm.DB) MonitoringRepository {
 	}
 }
 
-func (r *monitoringRepoSQL) FetchAllReport(ctx context.Context, filter *domain.FilterMonitoring) (data []shareddomain.Monitoring, err error) {
-	trace, ctx := tracer.StartTraceWithContext(ctx, "MonitoringRepoSQL:FetchAllReport")
-	defer func() { trace.Finish(tracer.FinishWithError(err)) }()
-
-	if filter.OrderBy == "" {
-		filter.OrderBy = "updated_at"
-	}
-	
-	err = r.setFilterMonitoring(shared.SetSpanToGorm(ctx, r.readDB), filter).Order(clause.OrderByColumn{
-		Column: clause.Column{Name: filter.OrderBy},
-		Desc:   strings.ToUpper(filter.Sort) == "DESC",
-	}).Limit(filter.Limit).Offset(filter.CalculateOffset()).Find(&data).Error
-	return
-}
-
 func (r *monitoringRepoSQL) FetchAll(ctx context.Context, filter *domain.FilterMonitoring) (data []shareddomain.Monitoring, err error) {
 	trace, ctx := tracer.StartTraceWithContext(ctx, "MonitoringRepoSQL:FetchAll")
 	defer func() { trace.Finish(tracer.FinishWithError(err)) }()
@@ -74,6 +59,39 @@ func (r *monitoringRepoSQL) Count(ctx context.Context, filter *domain.FilterMoni
 	trace.Log("count", count)
 	return
 }
+
+func (r *monitoringRepoSQL) SumAllMonitoring(ctx context.Context, filter *domain.FilterMonitoring) (result shareddomain.Monitoring, err error) {
+	trace, ctx := tracer.StartTraceWithContext(ctx, "MonitoringRepoSQL:SumAllMonitoring")
+	defer func() { trace.Finish(tracer.FinishWithError(err)) }()
+
+	if filter.OrderBy == "" {
+		filter.OrderBy = "updated_at"
+	}
+	
+
+	// today := time.Now()
+	// yesterday := today.AddDate(0, 0, -1)
+	yesterday := "2023-04-10"
+	err = r.setFilterMonitoring(shared.SetSpanToGorm(ctx, r.readDB), filter).Select(
+		"date", 
+		"SUM(dmn) as dmn", 
+		"SUM(cad) as cad", 
+		"SUM(dmp) as dmp", 
+		"SUM(bp) as bp",
+		"SUM(cad_mw) as cad_mw",
+		"SUM(po) as po",
+		"SUM(mo) as mo",
+		"SUM(fd) as fd",
+		"SUM(total) as total").Where("date = ?", yesterday).Group("date").Find(&result).Error
+		// "SUM(total) as total").Where("date = ?", yesterday.Format("2006-01-02")).Group("date").Find(&result).Error
+	return
+}
+
+
+
+
+
+
 
 func (r *monitoringRepoSQL) Find(ctx context.Context, filter *domain.FilterMonitoring) (result shareddomain.Monitoring, err error) {
 	trace, ctx := tracer.StartTraceWithContext(ctx, "MonitoringRepoSQL:Find")

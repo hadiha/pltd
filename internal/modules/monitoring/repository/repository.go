@@ -11,7 +11,8 @@ import (
 
 // MonitoringRepository abstract interface
 type MonitoringRepository interface {
-	FetchAllReport(ctx context.Context, filter *domain.FilterMonitoring) ([]shareddomain.Monitoring, error)
+	SumAllMonitoring(ctx context.Context, filter *domain.FilterMonitoring) (shareddomain.Monitoring, error)
+
 	FetchAll(ctx context.Context, filter *domain.FilterMonitoring) ([]shareddomain.Monitoring, error)
 	Count(ctx context.Context, filter *domain.FilterMonitoring) int
 	Find(ctx context.Context, filter *domain.FilterMonitoring) (shareddomain.Monitoring, error)
