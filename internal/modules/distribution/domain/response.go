@@ -17,3 +17,11 @@ type ResponseDistribution struct {
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
 }
+
+
+type ResponseSumDistribution struct {
+	Daya_pasang 			float32 `json:"daya_pasang"`
+	Daya_mampu 			float32 `json:"daya_mampu"`
+	Sentral 			float32 `json:"sentral"`
+	Mesin 				float32 `json:"mesin"`
+}

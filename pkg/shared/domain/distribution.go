@@ -22,8 +22,19 @@ type Distribution struct {
 	UpdatedAt  time.Time `gorm:"column:updated_at" json:"updated_at"`
 }
 
+type DistributionSum struct {
+	Daya_pasang 		int32 `gorm:"column:daya_pasang;type:integer" json:"daya_pasang"`
+	Daya_mampu 		int32 `gorm:"column:daya_mampu;type:integer" json:"daya_mampu"`
+	Sentral 	int32	 `json:"sentral"` 
+	Mesin 	int32	 `json:"mesin"` 
+}
+
 // TableName return table name of Distribution model
 func (Distribution) TableName() string {
+	return "pltd_sebaran"
+}
+
+func (DistributionSum) TableName() string {
 	return "pltd_sebaran"
 }
 

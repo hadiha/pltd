@@ -43,12 +43,32 @@ func (h *RestHandler) Mount(root *echo.Group) {
 	distribution := v1Root.Group("/distribution", echo.WrapMiddleware(h.mw.HTTPBearerAuth))
 	distribution.GET("", h.getAllDistribution, echo.WrapMiddleware(h.mw.HTTPPermissionACL("getAllDistribution")))
 	distribution.GET("/:instansi", h.getDistributionByInstansi, echo.WrapMiddleware(h.mw.HTTPPermissionACL("getDistributionByInstansi")))
+	distribution.GET("/sum", h.getSumDistribution, echo.WrapMiddleware(h.mw.HTTPPermissionACL("getSumDistribution")))
 
 	// hapus jika tidak perlu
 	// distribution.GET("/:id", h.getDetailDistributionByID, echo.WrapMiddleware(h.mw.HTTPPermissionACL("getDetailDistribution")))
 	// distribution.POST("", h.createDistribution, echo.WrapMiddleware(h.mw.HTTPPermissionACL("createDistribution")))
 	// distribution.PUT("/:id", h.updateDistribution, echo.WrapMiddleware(h.mw.HTTPPermissionACL("updateDistribution")))
 	// distribution.DELETE("/:id", h.deleteDistribution, echo.WrapMiddleware(h.mw.HTTPPermissionACL("deleteDistribution")))
+}
+
+
+func (h *RestHandler) getSumDistribution(c echo.Context) error {
+	trace, ctx := tracer.StartTraceWithContext(c.Request().Context(), "DistributionDeliveryREST:GetSumDistribution")
+	defer trace.Finish()
+
+	
+	var filter domain.FilterDistribution
+	if err := candihelper.ParseFromQueryParam(c.Request().URL.Query(), &filter); err != nil {
+		return wrapper.NewHTTPResponse(http.StatusBadRequest, "Failed parse filter", err).JSON(c.Response())
+	}
+
+	data, err := h.uc.Distribution().GetSumDistribution(ctx, &filter)
+	if err != nil {
+		return wrapper.NewHTTPResponse(http.StatusBadRequest, err.Error()).JSON(c.Response())
+	}
+
+	return wrapper.NewHTTPResponse(http.StatusOK, "Success", data).JSON(c.Response())
 }
 
 func (h *RestHandler) getAllDistribution(c echo.Context) error {

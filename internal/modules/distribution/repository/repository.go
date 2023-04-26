@@ -15,6 +15,8 @@ type DistributionRepository interface {
 	FetchAll(ctx context.Context, filter *domain.FilterDistribution) ([]shareddomain.Distribution, error)
 	Count(ctx context.Context, filter *domain.FilterDistribution) int
 
+	SumAllDistribution(ctx context.Context, filter *domain.FilterDistribution) (shareddomain.DistributionSum, error)
+
 
 	// hapus jika tidak perlu
 	Find(ctx context.Context, filter *domain.FilterDistribution) (shareddomain.Distribution, error)

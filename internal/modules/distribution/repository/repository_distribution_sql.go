@@ -77,6 +77,29 @@ func (r *distributionRepoSQL) Count(ctx context.Context, filter *domain.FilterDi
 	return
 }
 
+
+func (r *distributionRepoSQL) SumAllDistribution(ctx context.Context, filter *domain.FilterDistribution) (result shareddomain.DistributionSum, err error) {
+	trace, ctx := tracer.StartTraceWithContext(ctx, "DistributionRepoSQL:SumAllDistribution")
+	defer func() { trace.Finish(tracer.FinishWithError(err)) }()
+
+	if filter.OrderBy == "" {
+		filter.OrderBy = "updated_at"
+	}
+
+	err = r.setFilterDistribution(shared.SetSpanToGorm(ctx, r.readDB), filter).Select(
+		"SUM(daya_pasang) as daya_pasang", 
+		"SUM(daya_mampu) as daya_mampu", 
+		"COUNT(pembangkit) as sentral",
+		"COUNT(pembangkit) as mesin",
+		).Find(&result).Error
+	return
+}
+
+
+
+
+
+
 func (r *distributionRepoSQL) Find(ctx context.Context, filter *domain.FilterDistribution) (result shareddomain.Distribution, err error) {
 	trace, ctx := tracer.StartTraceWithContext(ctx, "DistributionRepoSQL:Find")
 	defer func() { trace.Finish(tracer.FinishWithError(err)) }()

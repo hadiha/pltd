@@ -19,6 +19,7 @@ import (
 type DistributionUsecase interface {
 	GetAllDistribution(ctx context.Context, filter *domain.FilterDistribution) (data []domain.ResponseDistribution, meta candishared.Meta, err error)
 	GetDistributionByInstansi(ctx context.Context, instansi string, filter *domain.FilterDistribution) (data []domain.ResponseDistribution, meta candishared.Meta, err error)
+	GetSumDistribution(ctx context.Context, filter *domain.FilterDistribution) (data domain.ResponseSumDistribution, err error)
 
 	// hapus jika tidka perlu
 	GetDetailDistribution(ctx context.Context, id string) (data domain.ResponseDistribution, err error)
