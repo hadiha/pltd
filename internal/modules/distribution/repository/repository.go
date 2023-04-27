@@ -16,6 +16,7 @@ type DistributionRepository interface {
 	Count(ctx context.Context, filter *domain.FilterDistribution) int
 
 	SumAllDistribution(ctx context.Context, filter *domain.FilterDistribution) (shareddomain.DistributionSum, error)
+	MapsDistribution(ctx context.Context, filter *domain.FilterDistribution) ([]shareddomain.Distribution, error)
 
 
 	// hapus jika tidak perlu

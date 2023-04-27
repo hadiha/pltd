@@ -44,6 +44,7 @@ func (h *RestHandler) Mount(root *echo.Group) {
 	distribution.GET("", h.getAllDistribution, echo.WrapMiddleware(h.mw.HTTPPermissionACL("getAllDistribution")))
 	distribution.GET("/:instansi", h.getDistributionByInstansi, echo.WrapMiddleware(h.mw.HTTPPermissionACL("getDistributionByInstansi")))
 	distribution.GET("/sum", h.getSumDistribution, echo.WrapMiddleware(h.mw.HTTPPermissionACL("getSumDistribution")))
+	distribution.GET("/maps", h.getMapsDistribution, echo.WrapMiddleware(h.mw.HTTPPermissionACL("getMapsDistribution")))
 
 	// hapus jika tidak perlu
 	// distribution.GET("/:id", h.getDetailDistributionByID, echo.WrapMiddleware(h.mw.HTTPPermissionACL("getDetailDistribution")))
@@ -94,6 +95,28 @@ func (h *RestHandler) getAllDistribution(c echo.Context) error {
 
 	message := "Success, with your user id (" + tokenClaim.Subject + ") and role (" + tokenClaim.Role + ")"
 	return wrapper.NewHTTPResponse(http.StatusOK, message, meta, data).JSON(c.Response())
+}
+
+func (h *RestHandler) getMapsDistribution(c echo.Context) error {
+	trace, ctx := tracer.StartTraceWithContext(c.Request().Context(), "DistributionDeliveryREST:GetMapsDistribution")
+	defer trace.Finish()
+
+	var filter domain.FilterDistribution
+	if err := candihelper.ParseFromQueryParam(c.Request().URL.Query(), &filter); err != nil {
+		return wrapper.NewHTTPResponse(http.StatusBadRequest, "Failed parse filter", err).JSON(c.Response())
+	}
+
+	// ini dikomen dlu
+	// if err := h.validator.ValidateDocument("distribution/get_all", filter); err != nil {
+	// 	return wrapper.NewHTTPResponse(http.StatusBadRequest, "Failed validate filter", err).JSON(c.Response())
+	// }
+
+	data, err := h.uc.Distribution().GetMapsDistribution(ctx, &filter)
+	if err != nil {
+		return wrapper.NewHTTPResponse(http.StatusBadRequest, err.Error()).JSON(c.Response())
+	}
+
+	return wrapper.NewHTTPResponse(http.StatusOK, "Success", data).JSON(c.Response())
 }
 
 func (h *RestHandler) getDistributionByInstansi(c echo.Context) error {

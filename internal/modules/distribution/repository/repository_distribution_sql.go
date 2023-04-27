@@ -77,7 +77,6 @@ func (r *distributionRepoSQL) Count(ctx context.Context, filter *domain.FilterDi
 	return
 }
 
-
 func (r *distributionRepoSQL) SumAllDistribution(ctx context.Context, filter *domain.FilterDistribution) (result shareddomain.DistributionSum, err error) {
 	trace, ctx := tracer.StartTraceWithContext(ctx, "DistributionRepoSQL:SumAllDistribution")
 	defer func() { trace.Finish(tracer.FinishWithError(err)) }()
@@ -89,9 +88,21 @@ func (r *distributionRepoSQL) SumAllDistribution(ctx context.Context, filter *do
 	err = r.setFilterDistribution(shared.SetSpanToGorm(ctx, r.readDB), filter).Select(
 		"SUM(daya_pasang) as daya_pasang", 
 		"SUM(daya_mampu) as daya_mampu", 
-		"COUNT(pembangkit) as sentral",
-		"COUNT(pembangkit) as mesin",
+		"COUNT(nama_pembangkit) as sentral",
+		"SUM(jumlah_mesin) as mesin",
 		).Find(&result).Error
+	return
+}
+
+func (r *distributionRepoSQL) MapsDistribution(ctx context.Context, filter *domain.FilterDistribution) (result []shareddomain.Distribution, err error) {
+	trace, ctx := tracer.StartTraceWithContext(ctx, "DistributionRepoSQL:MapsDistribution")
+	defer func() { trace.Finish(tracer.FinishWithError(err)) }()
+
+	if filter.OrderBy == "" {
+		filter.OrderBy = "updated_at"
+	}
+
+	err = r.setFilterDistribution(shared.SetSpanToGorm(ctx, r.readDB), filter).Select("instansi", "nama_pembangkit", "latittude", "longitude").Find(&result).Error
 	return
 }
 
@@ -151,7 +162,7 @@ func (r *distributionRepoSQL) setFilterDistribution(db *gorm.DB, filter *domain.
 		db = db.Where("instansi = ?", *filter.Instansi)
 	}
 	if filter.Search != "" {
-		db = db.Where("(pembangkit ILIKE '%%' || ? || '%%')", filter.Search)
+		db = db.Where("(nama_pembangkit ILIKE '%%' || ? || '%%')", filter.Search)
 	}
 
 	for _, preload := range filter.Preloads {

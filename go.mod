@@ -6,7 +6,7 @@ require (
 	github.com/golangid/candi v1.14.3
 	github.com/google/uuid v1.3.0
 	github.com/labstack/echo v3.3.10+incompatible
-	github.com/lib/pq v1.10.7
+	github.com/lib/pq v1.10.9
 	github.com/pressly/goose/v3 v3.10.0
 	github.com/stretchr/testify v1.8.2
 	gorm.io/driver/postgres v1.5.0

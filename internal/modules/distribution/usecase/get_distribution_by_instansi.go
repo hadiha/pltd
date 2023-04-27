@@ -3,6 +3,7 @@ package usecase
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"PLTD3/internal/modules/distribution/domain"
 	shareddomain "PLTD3/pkg/shared/domain"
@@ -28,18 +29,29 @@ func (uc *distributionUsecaseImpl) GetDistributionByInstansi(ctx context.Context
 
 	for _, detail := range data {
 		results = append(results, domain.ResponseDistribution{
-			ID: detail.ID,
-			Instansi: detail.Instansi,
-			Pembangkit: detail.Pembangkit,
-			Provinsi: detail.Provinsi,
-			Jenis_kit: detail.Jenis_kit,
-			Bbm: detail.Bbm,
-			Daya_pasang: detail.Daya_pasang,
-			Daya_mampu: detail.Daya_mampu,
-			Tahun: detail.Tahun,
-			Kondisi: detail.Kondisi,
-			Lattitude: detail.Lattitude,
-			Longitude: detail.Longitude,
+			ID : detail.ID,
+			NamaRegional : detail.NamaRegional,
+			NomorRegional : detail.NomorRegional,
+			NamaSistem : detail.NamaSistem,
+			KodeSistem : detail.KodeSistem,
+			NamaUnit : detail.NamaUnit,
+			KodeUnit : detail.KodeUnit,
+			NamaPembangkit : detail.NamaPembangkit,
+			NomorPembangkit : detail.NomorPembangkit,
+			Instansi : detail.Instansi,
+			Provinsi : detail.Provinsi,
+			Alamat : detail.Alamat,
+			JenisKit : detail.JenisKit,
+			Bbm : detail.Bbm,
+			DayaPasang : detail.DayaPasang,
+			DayaMampu : detail.DayaMampu,
+			Tahun : detail.Tahun,
+			Kondisi : detail.Kondisi,
+			Latittude : detail.Latittude,
+			Longitude : detail.Longitude,
+			JumlahMesin : detail.JumlahMesin,
+			CreatedAt : detail.CreatedAt.Format(time.RFC3339),
+			UpdatedAt : detail.UpdatedAt.Format(time.RFC3339),
 		})
 	}
 
